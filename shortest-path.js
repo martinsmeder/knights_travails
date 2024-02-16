@@ -1,34 +1,3 @@
-// const Graph = require("./graph");
-// const Queue = require("./queue");
-
-// function breadthFirstTraversal(graph, startingVertex) {
-//   const visited = new Set();
-//   const result = [];
-//   const queue = new Queue();
-
-//   queue.enqueue(startingVertex);
-//   visited.add(startingVertex);
-
-//   while (!queue.isEmpty()) {
-//     const currentVertex = queue.dequeue();
-//     result.push(currentVertex);
-
-//     for (const neighbor of graph.adjacencyList[currentVertex]) {
-//       if (!visited.has(neighbor)) {
-//         queue.enqueue(neighbor);
-//         visited.add(neighbor);
-//       }
-//     }
-//   }
-
-//   return result;
-// }
-
-// const graph = new Graph();
-// graph.createGrid(graph);
-// graph.printAdjacencyList();
-// console.log(breadthFirstTraversal(graph, "A1"));
-
 function getPossibleMoves(position) {
   // Get letter and number
   let [letter, number] = position;
@@ -69,9 +38,57 @@ function getPossibleMoves(position) {
   else return [];
 }
 
-module.exports = getPossibleMoves;
+function shortestPath(start, end) {
+  const visited = new Set(); // Set to keep track of visited vertices
+  const queue = []; // Array to simulate a queue for BFS traversal
+  const path = {}; // Object to store path
 
-// Example:
+  // Enqueue the starting vertex and mark it as visited
+  queue.push(start);
+  visited.add(start);
+
+  // Initialize the path for the starting vertex
+  path[start] = [start];
+
+  // Perform BFS until the "queue" is empty
+  while (queue.length > 0) {
+    // Dequeue the current vertex
+    const currentVertex = queue.shift();
+
+    // Iterate over neighbors of the current vertex
+    for (const neighbor of getPossibleMoves(currentVertex)) {
+      // Check if the neighbor has not been visited
+      if (!visited.has(neighbor)) {
+        queue.push(neighbor); // Enqueue the neighbor
+        visited.add(neighbor); // Mark it as visited
+        path[neighbor] = [...path[currentVertex], neighbor]; // Update path
+
+        // Check if the neighbor is the destination vertex
+        if (neighbor === end) {
+          // If yes, return the path to the destination vertex
+          return path[end];
+        }
+      }
+    }
+  }
+
+  // If no path is found, return an empty array
+  return [];
+}
+
+const start = "A1";
+const end = "F5";
+const path = shortestPath(start, end);
+
+if (path.length > 0) {
+  console.log(
+    `You made it in ${path.length - 1} moves! Path: ${path.join(" -> ")}`
+  );
+} else {
+  console.log(`No path found from ${start} to ${end}.`);
+}
+
+// Board example:
 // A1, A2, A3, A4, A5, A6, A7, A8
 // B1, B2, B3, B4, B5, B6, B7, B8
 // C1, C2, C3, C4, C5, C6, C7, C8
